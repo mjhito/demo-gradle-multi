@@ -28,5 +28,8 @@ jobs:
       - uses: actions/checkout@master
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/gradle@master
+        with:
+          args: --all-sub-projects
+          command: monitor
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
