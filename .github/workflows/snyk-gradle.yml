@@ -7,6 +7,9 @@ on:
 jobs:
   snyk:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./test-prefix
     steps:
       - uses: actions/checkout@master
       - name: Run Snyk to check for vulnerabilities
