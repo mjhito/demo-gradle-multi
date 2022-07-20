@@ -14,6 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: pwd
+      - run: ls
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/gradle@master
         with:
