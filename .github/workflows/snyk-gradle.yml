@@ -9,11 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: get workspace
-        run: |
-          ls
-          pwd
-        shell: bash
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/gradle@master
         with:
