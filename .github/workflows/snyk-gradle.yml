@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - run: pwd
+      - run: echo "${GITHUB_WORKSPACE}"
       - run: ls
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/gradle@master
