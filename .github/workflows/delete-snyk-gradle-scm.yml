@@ -10,14 +10,16 @@ jobs:
     - uses: actions/checkout@master
     - name: Run Script
       run: |
-        ORG_ID=${{ secrets.SNYK_ORG_ID }}
-        SNYK_TOKEN=${{ secrets.SNYK_TOKEN }}
-        PROJECTS_TO_DELETE=$(curl --location "https://api.snyk.io/rest/orgs/$ORG_ID/projects?version=2024-04-29&types=gradle&origins=github&limit=100" \
-          --header "Authorization: token $SNYK_TOKEN" | jq -r '.data[].id')
-        
-        for PROJECT_ID in $PROJECTS_TO_DELETE; do
-            RES=$(curl --location --request DELETE "https://api.snyk.io/rest/orgs/$ORG_ID/projects/$PROJECT_ID?version=2024-04-29" \
-                --header "Authorization: token $SNYK_TOKEN")
-            echo $RES
+        # Fetch list of Gradle projects imported via GitHub (i.e. not from CLI)
+        PROJECTS_TO_DELETE=$(curl --location "https://api.snyk.io/rest/orgs/${{ secrets.SNYK_ORG_ID }}/projects?version=2024-04-29&types=gradle&origins=github&limit=100" \
+          --header "Authorization: token ${{ secrets.SNYK_TOKEN }}" | jq -c '.data[] | {id: .id, name: .attributes.name}')
+
+        # Iteratively delete each project
+        for PROJECT in $PROJECTS_TO_DELETE; do
+            PROJECT_ID=$(echo $PROJECT | jq -r '.id')
+            PROJECT_NAME=$(echo $PROJECT | jq -r '.name')
+            curl --location --request DELETE "https://api.snyk.io/rest/orgs/${{ secrets.SNYK_ORG_ID }}/projects/$PROJECT_ID?version=2024-04-29" \
+                --header "Authorization: token ${{ secrets.SNYK_TOKEN }}"
+            echo "deleted $PROJECT_NAME"
         done
       
