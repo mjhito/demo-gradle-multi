@@ -1,6 +1,9 @@
 name: Snyk with Gradle
 
-on: workflow_dispatch
+on: 
+  push:
+    branches:
+      - main
 
 jobs:
   snyk:
