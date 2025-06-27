@@ -1,8 +1,9 @@
 name: Snyk with Gradle
 
-on:
+on: 
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   snyk:
@@ -10,11 +11,31 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: echo "${{ github.workspace }}"
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/gradle@master
+
+      - name: Use Node.js for installing Snyk
+        uses: actions/setup-node@v2
         with:
-          args: --all-sub-projects --remote-repo-url=${{ github.event.repository.name }}
-          command: monitor
+          node-version: 18.4
+
+      # Install & prepare Snyk
+      - run: npm install --location=global snyk
+
+      - name: Setup Snyk
         env:
+          SNYK_API: ${{ secrets.SNYK_API }}
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk auth "$SNYK_TOKEN"
+
+      - name: Snyk Open Source Scanning
+        env:
+          SNYK_API: ${{ secrets.SNYK_API }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --org=${{ secrets.SNYK_ORG }} --all-sub-projects
+        continue-on-error: true
+        
+      - name: Snyk Open Source Monitor
+        env:
+          SNYK_API: ${{ secrets.SNYK_API }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk monitor --org=${{ secrets.SNYK_ORG }} --all-sub-projects
       
