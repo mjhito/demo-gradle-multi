@@ -38,4 +38,4 @@ jobs:
           SNYK_API: ${{ secrets.SNYK_API }}
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: snyk monitor --org=${{ secrets.SNYK_ORG }} --all-sub-projects
-      
+    
